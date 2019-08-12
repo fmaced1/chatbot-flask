@@ -26,7 +26,7 @@ script = Script()
 botname = 'bot'
 
 pt_bot = ChatBot(
-    "DPSP_bot",
+    "ChatbotFlask",
     storage_adapter='chatterbot.storage.MongoDatabaseAdapter',
     read_only=True,
     logic_adapters=[
@@ -47,7 +47,7 @@ pt_bot = ChatBot(
         {
             'import_path': 'chatterbot.logic.LowConfidenceAdapter',
             'threshold': 0.50,
-            'default_response': 'N�o sei responder isso ainda... '
+            'default_response': 'Não sei responder isso ainda... '
         }
     ],
     filters=[
@@ -114,7 +114,7 @@ def get_bot_response():
 def get_ini():
     timestamp = str(request.args.get('ptimestamp'))
 
-    gret = '{_greeting} {_name}, gostaria de resetar a senha de usu�rio no SAP?'.format(_greeting=greetings.getGreeting(), _name=user.Name)
+    gret = '{_greeting} {_name}, gostaria de resetar a senha de usuário no SAP?'.format(_greeting=greetings.getGreeting(), _name=user.Name)
 
     log.setDetail(timestamp, user, gret, botname)
 
