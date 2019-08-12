@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+  </head>
+  <body>
+    <h1>ChatBot</h1>
+    <h3>Beta v0.01</h3>
+
+    <!--<input type="hidden" id="timestamp" name="timestamp">-->
+    <div><input id="ptimestamp" name="ptimestamp" type="text"></div>
+
+
+    <div>
+      <div id="chatbox">
+          <!--<div class="loader"></div>-->
+      </div>
+      <div class="spinner chatbox">
+        <div class="bounce1"></div>
+        <div class="bounce2"></div>
+        <div class="bounce3"></div>
+      </div>
+      <div id="userInput">
+        <!--<input id="textInput" type="text" name="msg" placeholder="Digite uma mensagem">-->
+        <textarea id="textInput" name="msg" placeholder="Digite uma mensagem" rows="3"></textarea>
+        <input id="buttonInput" type="submit" value="Enviar">
+      </div>
+
+      <script>
+        function getIni() {
+          $(".spinner").show();
+          var _timestamp = $("#ptimestamp").val();
+          $.get("/ini", { ptimestamp: _timestamp }).done(function(data) {
+            var botHtml = '<div class="botBox"><p class="botId"><span>' + data.name + ' - ' + data.datetime + '</span></p><p class="botText"><span>' + data.message + '</span></p></div>';
+            $("#chatbox").append(botHtml);
+            document.getElementById('userInput').scrollIntoView({block: 'start', behavior: 'smooth'});
+            $(".spinner").hide();
+          });
+        }
+
+        function getBotResponse() {
+          $(".spinner").show();
+          var _timestamp = $("#ptimestamp").val();
+          var rawText = $("#textInput").val();
+          if (rawText) {
+            $.get("/send", { ptimestamp: _timestamp, msg: rawText }).done(function(data) {
+              var userHtml = '<div class="userBox"><p class="userId"><span>' + data.name + ' - ' + data.datetime + '</span></p><p class="userText"><span>' + data.message + '</span></p></div>';
+              $("#textInput").val("");
+              $("#chatbox").append(userHtml);
+              document.getElementById('userInput').scrollIntoView({block: 'start', behavior: 'smooth'});
+            });
+
+            $.get("/get", { ptimestamp: _timestamp, msg: rawText }).done(function(data) {
+              var botHtml = '<div class="botBox"><p class="botId"><span>' + data.name + ' - ' + data.datetime + '</span></p><p class="botText"><span>' + data.message + '</span></p></div>';
+              $("#chatbox").append(botHtml);
+              document.getElementById('userInput').scrollIntoView({block: 'start', behavior: 'smooth'});
+              $(".spinner").hide();
+            });
+          }
+          else {
+            $(".spinner").hide();
+          }
+        }
+
+        $("#textInput").keypress(function(e) {
+            if(e.which == 13) {
+                getBotResponse();
+            }
+        });
+
+        $("#buttonInput").click(function() {
+          getBotResponse();
+        });
+
+        $.urlParam = function(name){
+            var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+            if (results==null){
+              return null;
+            }
+            else{
+              return decodeURI(results[1]) || 0;
+            }
+        }
+
+        $( document ).ready(function() {
+          var timestamp = '{{ptimestamp}}';
+          $('#ptimestamp').val(timestamp);
+          getIni();
+        });
+
+      </script>
+    </div>
+  </body>
+</html>
